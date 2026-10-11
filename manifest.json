@@ -1,0 +1,21 @@
+{
+  "name": "Kalkulator Refund Vyota",
+  "short_name": "Refund Vyota",
+  "description": "Kalkulator & Struk Refund Vyota Store",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#e8457c",
+  "icons": [
+    {
+      "src": "calculator.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "calculator.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
