@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Refund Vyota</title>
+    <link rel="icon" type="image/png" href="calculator.png">
+    <!-- Google Fonts: Poppins & Fira Code untuk Monospace -->
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- html2canvas Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        mono: ['Fira Code', 'monospace'],
+                    },
+                    colors: {
+                        brand: {
+                            pink: '#e8457c',
+                            lightPink: '#fce7f0',
+                            darkPink: '#c73364',
+                            cardBg: '#fff0f3',
+                            border: '#f9a8c4',
+                            darkCard: '#1e293b',
+                            darkBg: '#0f172a',
+                            darkPanel: '#111827'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body id="bodyTag" class="bg-rose-50 dark:bg-slate-950 min-h-screen font-sans text-gray-800 dark:text-gray-100 flex flex-col items-center justify-between p-3 sm:p-6 transition-colors duration-300">
+
+    <div id="mainCard" class="w-full max-w-7xl bg-white dark:bg-slate-900 rounded-3xl shadow-xl overflow-hidden border border-pink-100 dark:border-slate-800 flex flex-col transition-colors duration-300 my-auto">
+        
+        <!-- Header -->
+        <div class="bg-white dark:bg-slate-900 px-6 py-4 flex flex-col md:flex-row justify-between items-center border-b border-pink-100 dark:border-slate-800 transition-colors duration-300 gap-3">
+            <div class="hidden md:block w-24"></div>
+
+            <div class="text-center">
+                <h1 class="text-lg sm:text-xl font-extrabold text-gray-900 dark:text-white flex items-center justify-center gap-2">
+                    <span>🎀</span> Calculator Refund <span>🎀</span> 
+                </h1>
+                <p class="text-[11px] text-gray-400 dark:text-gray-500">Kalkulator & Struk Refund Vyota Store</p>
+            </div>
+
+            <!-- Theme Toggle Buttons -->
+            <div class="flex bg-gray-100 dark:bg-slate-800 p-1 rounded-full text-xs gap-1 transition-colors duration-300">
+                <button id="btnLight" onclick="setTheme('light')" class="px-3 py-1 rounded-full bg-white dark:bg-transparent shadow-sm text-gray-700 dark:text-gray-400 font-medium transition-all">☀️ Light</button>
+                <button id="btnDark" onclick="setTheme('dark')" class="px-3 py-1 rounded-full text-gray-400 dark:text-gray-200 dark:bg-slate-700 dark:shadow-sm font-medium transition-all">🌙 Dark</button>
+            </div>
+        </div>
+
+        <!-- Main Layout -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-pink-100 dark:divide-slate-800 transition-colors duration-300">
+            
+            <!-- 1. CONTAINER KIRI: INPUT -->
+            <div id="form-container" class="p-5 space-y-4">
+                
+                <div class="space-y-3">
+                    <div class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400 tracking-wider flex items-center gap-1.5">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span> DATA REFUND APLIKASI
+                    </div>
+
+                    <!-- Nama Aplikasi -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Nama Aplikasi / Produk</label>
+                        <input type="text" id="namaApp" value="Capcut Premium" oninput="hitungRefund()" class="w-full px-3.5 py-2 bg-pink-50/50 dark:bg-slate-800 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-800 dark:text-gray-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-pink transition-colors">
+                    </div>
+
+                    <!-- Grid Tanggal -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Tanggal Beli</label>
+                            <input type="date" id="tglBeli" onchange="hitungRefund()" class="w-full px-2.5 py-2 bg-pink-50/50 dark:bg-slate-800 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-800 dark:text-gray-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-pink transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Tanggal Problem</label>
+                            <input type="date" id="tglProblem" onchange="hitungRefund()" class="w-full px-2.5 py-2 bg-pink-50/50 dark:bg-slate-800 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-800 dark:text-gray-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-pink transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Harga Beli -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Harga Beli Premium</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 dark:text-gray-500 text-xs font-medium">Rp</span>
+                            <input type="number" id="hargaBeli" value="26000" oninput="hitungRefund()" class="w-full pl-9 pr-3.5 py-2 bg-pink-50/50 dark:bg-slate-800 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-800 dark:text-gray-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-pink transition-colors">
+                        </div>
+                    </div>
+
+                    <!-- Durasi & Sisa -->
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Total Durasi App</label>
+                            <div class="relative">
+                                <input type="number" id="totalDurasi" value="25" oninput="hitungRefund()" class="w-full pl-3 pr-9 py-2 bg-pink-50/50 dark:bg-slate-800 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-800 dark:text-gray-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-pink transition-colors">
+                                <span class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 dark:text-gray-500 text-[10px]">hari</span>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-semibold text-gray-500 dark:text-gray-400 mb-1">Sisa Durasi (Otomatis)</label>
+                            <div class="relative">
+                                <input type="number" id="sisaDurasi" readonly class="w-full pl-3 pr-9 py-2 bg-gray-100 dark:bg-slate-800/80 border border-pink-200 dark:border-slate-700 rounded-xl text-xs text-gray-600 dark:text-gray-300 font-bold cursor-not-allowed focus:outline-none">
+                                <span class="absolute inset-y-0 right-0 pr-2.5 flex items-center text-gray-400 dark:text-gray-500 text-[10px]">hari</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Service Fee Section -->
+                <div class="space-y-2 pt-1">
+                    <div class="text-[11px] font-bold text-slate-500 dark:text-slate-400 tracking-wider flex items-center gap-1.5">
+                        <span>🏷️</span> SERVICE FEE
+                    </div>
+
+                    <div class="space-y-1.5">
+                        <div onclick="pilihFee(0.8, 'pemakaian < 1 minggu', this)" class="fee-card flex items-center justify-between p-2 border-2 border-brand-pink bg-pink-50/60 dark:bg-slate-800 dark:border-brand-pink rounded-xl cursor-pointer transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                <span class="text-[11px] font-medium text-gray-700 dark:text-gray-200">Pemakaian < 1 minggu</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">0.8</span>
+                        </div>
+
+                        <div onclick="pilihFee(0.7, 'belum claim, >1 minggu', this)" class="fee-card flex items-center justify-between p-2 border border-pink-100 dark:border-slate-800 bg-transparent rounded-xl cursor-pointer hover:bg-pink-50/40 dark:hover:bg-slate-800/50 transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                                <span class="text-[11px] font-medium text-gray-700 dark:text-gray-300">Belum claim, >1 minggu</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-blue-600 dark:text-blue-400">0.7</span>
+                        </div>
+
+                        <div onclick="pilihFee(0.6, 'pernah claim garansi 1-2x', this)" class="fee-card flex items-center justify-between p-2 border border-pink-100 dark:border-slate-800 bg-transparent rounded-xl cursor-pointer hover:bg-pink-50/40 dark:hover:bg-slate-800/50 transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span>
+                                <span class="text-[11px] font-medium text-gray-700 dark:text-gray-300">Claim garansi 1-2x</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-amber-600 dark:text-amber-400">0.6</span>
+                        </div>
+
+                        <div onclick="pilihFee(0.5, 'pernah claim garansi 3x', this)" class="fee-card flex items-center justify-between p-2 border border-pink-100 dark:border-slate-800 bg-transparent rounded-xl cursor-pointer hover:bg-pink-50/40 dark:hover:bg-slate-800/50 transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                                <span class="text-[11px] font-medium text-gray-700 dark:text-gray-300">Claim garansi 3x</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-orange-600 dark:text-orange-400">0.5</span>
+                        </div>
+
+                        <div onclick="pilihFee(0.4, 'pernah claim garansi >3x', this)" class="fee-card flex items-center justify-between p-2 border border-pink-100 dark:border-slate-800 bg-transparent rounded-xl cursor-pointer hover:bg-pink-50/40 dark:hover:bg-slate-800/50 transition">
+                            <div class="flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-rose-600"></span>
+                                <span class="text-[11px] font-medium text-gray-700 dark:text-gray-300">Claim garansi >3x</span>
+                            </div>
+                            <span class="text-[11px] font-bold text-rose-600 dark:text-rose-400">0.4</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 2. CONTAINER TENGAH: HASIL / KALKULASI -->
+            <div id="result-container" class="p-5 bg-brand-cardBg dark:bg-slate-800/40 flex flex-col justify-between space-y-4 transition-colors duration-300">
+                <div class="space-y-3.5">
+                    <div>
+                        <p class="text-[11px] font-bold text-rose-500 dark:text-rose-300 tracking-wider">TOTAL REFUND</p>
+                        <h2 id="totalRefundText" class="text-3xl font-black text-brand-pink dark:text-pink-400 mt-0.5">Rp 0</h2>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 shadow-sm flex justify-between items-center">
+                            <span class="font-medium text-gray-400 dark:text-gray-500 text-[11px]">Harga beli</span>
+                            <span id="resHargaBeli" class="font-bold text-gray-800 dark:text-gray-200">Rp 0</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 shadow-sm flex justify-between items-center">
+                            <span class="font-medium text-gray-400 dark:text-gray-500 text-[11px]">Sisa durasi</span>
+                            <span id="resSisaDurasi" class="font-bold text-gray-800 dark:text-gray-200">0 hari</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 shadow-sm flex justify-between items-center">
+                            <span class="font-medium text-gray-400 dark:text-gray-500 text-[11px]">Total durasi</span>
+                            <span id="resTotalDurasi" class="font-bold text-gray-800 dark:text-gray-200">0 hari</span>
+                        </div>
+                        <div class="bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-pink-100 dark:border-slate-700 shadow-sm flex justify-between items-center">
+                            <span class="font-medium text-gray-400 dark:text-gray-500 text-[11px]">Service fee</span>
+                            <span id="resServiceFee" class="font-bold text-blue-600 dark:text-blue-400">0.8</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white dark:bg-slate-900 p-3 rounded-xl border border-pink-100 dark:border-slate-700 shadow-sm space-y-1 text-xs transition-colors">
+                        <p class="font-bold text-[10px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">Rumus Hitungan</p>
+                        <p class="text-[10px] text-gray-400 dark:text-gray-500 mb-1">(Harga × sisa durasi ÷ durasi app × service fee)</p>
+                        <p id="rumusBaris1" class="font-mono text-[11px] text-gray-700 dark:text-gray-200">0 × 0 ÷ 25 × 0.8</p>
+                        <p id="rumusBaris2" class="font-mono text-[11px] text-gray-700 dark:text-gray-200">= 0 × 0.8</p>
+                        <p id="rumusBaris3" class="font-mono text-[11px] text-brand-pink dark:text-pink-400 font-bold">= Rp 0</p>
+                    </div>
+                </div>
+
+                <button onclick="resetForm()" class="w-full bg-white dark:bg-slate-900 border border-pink-200 dark:border-slate-700 hover:bg-pink-50 dark:hover:bg-slate-800 text-brand-pink dark:text-pink-400 font-semibold py-2.5 rounded-xl transition flex items-center justify-center gap-2 shadow-sm text-xs">
+                    <span>🔄 Reset Data</span>
+                </button>
+            </div>
+
+            <!-- 3. CONTAINER KANAN: STRUK REFUND VYOTA -->
+            <div id="receipt-container" class="p-5 bg-pink-50/40 dark:bg-slate-900/80 flex flex-col justify-between space-y-4 transition-colors duration-300">
+                
+                <!-- Area Struk Bersih untuk Gambar PNG -->
+                <div id="strukCard" class="space-y-3 text-[11px] text-gray-700 dark:text-gray-300 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-pink-100 dark:border-slate-800 shadow-sm">
+                    
+                    <!-- Header Struk -->
+                    <div class="text-center border-b border-dashed border-pink-200 dark:border-slate-700 pb-2.5">
+                        <p class="font-black text-sm text-brand-pink dark:text-pink-400 tracking-wider">🍀STRUK REFUND VYOTA🍀</p>
+                        <p class="text-[10px] text-gray-400 dark:text-gray-500 mt-0.5">Berikut rincian produk kamu</p>
+                    </div>
+
+                    <!-- Tanggal Info -->
+                    <div class="flex justify-between items-start border-b border-dashed border-pink-200 dark:border-slate-700 pb-2">
+                        <div>
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 block">tanggal beli</span>
+                            <span id="strukTglBeli" class="font-bold text-gray-800 dark:text-gray-200">-</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-[10px] text-gray-400 dark:text-gray-500 block">tanggal problem</span>
+                            <span id="strukTglProblem" class="font-bold text-gray-800 dark:text-gray-200">-</span>
+                        </div>
+                    </div>
+
+                    <!-- Detail Produk & Harga -->
+                    <div class="space-y-1 border-b border-dashed border-pink-200 dark:border-slate-700 pb-2">
+                        <div class="flex justify-between items-start font-bold gap-2">
+                            <span id="strukNamaApp" class="break-words flex-1 pr-2">Capcut Premium</span>
+                            <span id="strukHargaBeli" class="text-brand-pink dark:text-pink-400 whitespace-nowrap">Rp 0</span>
+                        </div>
+                        <div class="text-[10px] text-gray-500 dark:text-gray-400 space-y-0.5">
+                            <p>durasi <span id="strukTotalDurasi">0</span> hari</p>
+                            <p>sisa <span id="strukSisaDurasi">0</span> hari</p>
+                            <p>service fee : <span id="strukServiceFeeText">0.8 (pemakaian < 1 minggu)</span></p>
+                        </div>
+                    </div>
+
+                    <!-- Penghitungan -->
+                    <div class="space-y-0.5 text-[10px] text-gray-500 dark:text-gray-400 border-b border-dashed border-pink-200 dark:border-slate-700 pb-2 font-mono">
+                        <p class="font-semibold text-gray-600 dark:text-gray-300 font-sans">penghitungan</p>
+                        <p id="strukRumus1">0 × 0 hari / 0 hari × 0,8</p>
+                        <p id="strukRumus2">= 0 × 0.8</p>
+                        <p id="strukRumus3" class="font-bold text-brand-pink dark:text-pink-400">= Rp 0</p>
+                    </div>
+
+                    <!-- Total Refund Struk -->
+                    <div class="flex justify-between items-center font-bold text-xs pt-0.5">
+                        <span>TOTAL REFUND</span>
+                        <span id="strukTotalRefund" class="text-brand-pink dark:text-pink-400 text-sm font-black">Rp 0</span>
+                    </div>
+
+                    <!-- Note & Penutup -->
+                    <div class="text-[10px] text-gray-400 dark:text-gray-500 space-y-2 pt-2 border-t border-dashed border-pink-200 dark:border-slate-700">
+                        <p><strong class="text-gray-600 dark:text-gray-400">Note :</strong> setelah kamu mendapat ini, siapkan nomor rekening kamu / qris jika kamu punya. mohon menunggu, estimasi ± 10 menit</p>
+                        <div class="text-center pt-1 space-y-0.5 font-semibold text-gray-500 dark:text-gray-400">
+                            <p>MOHON MAAF ATAS KETIDAKNYAMANANNYA</p>
+                            <p>TERIMA KASIH TELAH BERBELANJA</p>
+                            <p class="text-brand-pink dark:text-pink-400">SAMPAI BERTEMU LAIN WAKTU😊</p>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="previewStruk()" class="w-full bg-slate-800 hover:bg-slate-700 dark:bg-slate-700 dark:hover:bg-slate-600 text-white font-semibold py-2.5 rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 text-xs">
+                        <span>👁️ Preview</span>
+                    </button>
+                    <button onclick="downloadStrukPNG()" class="w-full bg-brand-pink hover:bg-brand-darkPink text-white font-semibold py-2.5 rounded-xl shadow-sm transition flex items-center justify-center gap-1.5 text-xs">
+                        <span>📥 Download</span>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Modal Preview Struk -->
+    <div id="previewModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl max-w-sm w-full p-5 shadow-2xl space-y-4 border border-pink-100 dark:border-slate-800">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-xs text-gray-800 dark:text-gray-100">Preview Struk Refund</h3>
+                <button onclick="closePreview()" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 text-lg font-bold">×</button>
+            </div>
+            
+            <div id="previewContentArea" class="flex justify-center overflow-x-auto p-1"></div>
+
+            <button onclick="closePreview()" class="w-full bg-brand-pink hover:bg-brand-darkPink text-white font-semibold py-2 rounded-xl transition text-xs shadow-sm">
+                Tutup Preview
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-2 text-[11px] text-gray-400 dark:text-gray-500 mt-2">
+        made with ❤️ vyota store
+    </footer>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let selectedServiceFee = 0.8;
+        let selectedFeeKeterangan = "pemakaian < 1 minggu";
+
+        function setTheme(mode) {
+            const htmlTag = document.documentElement;
+            const btnLight = document.getElementById('btnLight');
+            const btnDark = document.getElementById('btnDark');
+
+            if (mode === 'dark') {
+                htmlTag.classList.add('dark');
+                btnDark.className = "px-3 py-1 rounded-full bg-slate-700 shadow-sm text-white font-medium transition-all";
+                btnLight.className = "px-3 py-1 rounded-full text-gray-400 dark:bg-transparent font-medium transition-all";
+                localStorage.setItem('theme', 'dark');
+            } else {
+                htmlTag.classList.remove('dark');
+                btnLight.className = "px-3 py-1 rounded-full bg-white shadow-sm text-gray-700 font-medium transition-all";
+                btnDark.className = "px-3 py-1 rounded-full text-gray-400 font-medium transition-all";
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            setTheme(savedTheme);
+
+            const todayObj = new Date();
+            const todayStr = todayObj.toISOString().split('T')[0];
+            
+            const pastObj = new Date();
+            pastObj.setDate(todayObj.getDate() - 3);
+            const pastStr = pastObj.toISOString().split('T')[0];
+
+            document.getElementById('tglBeli').value = pastStr;
+            document.getElementById('tglProblem').value = todayStr;
+
+            hitungRefund();
+        });
+
+        function formatRupiah(angka) {
+            return new Intl.NumberFormat('id-ID').format(angka);
+        }
+
+        function formatTanggalIndo(dateString) {
+            if (!dateString) return '-';
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', options);
+        }
+
+        function pilihFee(nilai, ket, element) {
+            selectedServiceFee = nilai;
+            selectedFeeKeterangan = ket;
+
+            const cards = document.querySelectorAll('.fee-card');
+            cards.forEach(card => {
+                card.classList.remove('border-brand-pink', 'bg-pink-50/60', 'dark:bg-slate-800', 'dark:border-brand-pink', 'border-2');
+                card.classList.add('border', 'border-pink-100', 'dark:border-slate-800');
+            });
+
+            element.classList.remove('border-pink-100', 'dark:border-slate-800');
+            element.classList.add('border-brand-pink', 'bg-pink-50/60', 'dark:bg-slate-800', 'dark:border-brand-pink', 'border-2');
+
+            hitungRefund();
+        }
+
+        function hitungRefund() {
+            const namaApp = document.getElementById('namaApp').value || 'Aplikasi';
+            const rawTglBeli = document.getElementById('tglBeli').value;
+            const rawTglProblem = document.getElementById('tglProblem').value;
+            
+            const tglBeli = formatTanggalIndo(rawTglBeli);
+            const tglProblem = formatTanggalIndo(rawTglProblem);
+
+            const hargaBeli = parseFloat(document.getElementById('hargaBeli').value) || 0;
+            const totalDurasi = parseFloat(document.getElementById('totalDurasi').value) || 0;
+
+            let sisaDurasi = 0;
+            if (rawTglBeli && rawTglProblem) {
+                const date1 = new Date(rawTglBeli);
+                const date2 = new Date(rawTglProblem);
+                const diffTime = date2 - date1;
+                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                
+                const hariBerjalan = diffDays > 0 ? diffDays : 0;
+                sisaDurasi = totalDurasi - hariBerjalan;
+                if (sisaDurasi < 0) sisaDurasi = 0;
+                if (sisaDurasi > totalDurasi) sisaDurasi = totalDurasi;
+            }
+
+            document.getElementById('sisaDurasi').value = sisaDurasi;
+            
+            const pembagi = totalDurasi > 0 ? totalDurasi : 1;
+            const step1 = (hargaBeli * sisaDurasi) / pembagi;
+            const hasilAkhir = Math.round(step1 * selectedServiceFee);
+
+            // Update Tampilan Kalkulator
+            document.getElementById('totalRefundText').innerText = `Rp ${formatRupiah(hasilAkhir)}`;
+            document.getElementById('resHargaBeli').innerText = `Rp ${formatRupiah(hargaBeli)}`;
+            document.getElementById('resSisaDurasi').innerText = `${sisaDurasi} hari`;
+            document.getElementById('resTotalDurasi').innerText = `${totalDurasi} hari`;
+            document.getElementById('resServiceFee').innerText = `${selectedServiceFee}`;
+
+            document.getElementById('rumusBaris1').innerText = `${formatRupiah(hargaBeli)} × ${sisaDurasi} ÷ ${totalDurasi} × ${selectedServiceFee}`;
+            document.getElementById('rumusBaris2').innerText = `= ${formatRupiah(Math.round(step1))} × ${selectedServiceFee}`;
+            document.getElementById('rumusBaris3').innerText = `= Rp ${formatRupiah(hasilAkhir)}`;
+
+            // Update Tampilan Struk
+            document.getElementById('strukTglBeli').innerText = tglBeli;
+            document.getElementById('strukTglProblem').innerText = tglProblem;
+            document.getElementById('strukNamaApp').innerText = namaApp;
+            document.getElementById('strukHargaBeli').innerText = `Rp ${formatRupiah(hargaBeli)}`;
+            document.getElementById('strukTotalDurasi').innerText = totalDurasi;
+            document.getElementById('strukSisaDurasi').innerText = sisaDurasi;
+            document.getElementById('strukServiceFeeText').innerText = `${selectedServiceFee} (${selectedFeeKeterangan})`;
+
+            document.getElementById('strukRumus1').innerText = `${formatRupiah(hargaBeli)} × ${sisaDurasi} hari / ${totalDurasi} hari × ${selectedServiceFee}`;
+            document.getElementById('strukRumus2').innerText = `= ${formatRupiah(Math.round(step1))} × ${selectedServiceFee}`;
+            document.getElementById('strukRumus3').innerText = `= Rp ${formatRupiah(hasilAkhir)}`;
+            document.getElementById('strukTotalRefund').innerText = `Rp ${formatRupiah(hasilAkhir)}`;
+        }
+
+        function resetForm() {
+            const todayObj = new Date();
+            const todayStr = todayObj.toISOString().split('T')[0];
+            const pastObj = new Date();
+            pastObj.setDate(todayObj.getDate() - 3);
+            const pastStr = pastObj.toISOString().split('T')[0];
+
+            document.getElementById('namaApp').value = 'Capcut Premium';
+            document.getElementById('tglBeli').value = pastStr;
+            document.getElementById('tglProblem').value = todayStr;
+            document.getElementById('hargaBeli').value = 26000;
+            document.getElementById('totalDurasi').value = 25;
+            
+            const firstCard = document.querySelector('.fee-card');
+            pilihFee(0.8, 'pemakaian < 1 minggu', firstCard);
+        }
+
+        function previewStruk() {
+            const strukElement = document.getElementById('strukCard');
+            const previewArea = document.getElementById('previewContentArea');
+            previewArea.innerHTML = '';
+
+            html2canvas(strukElement, {
+                scale: 2,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+            }).then(canvas => {
+                canvas.className = "max-w-full h-auto rounded-xl shadow-md border border-gray-100 dark:border-slate-800";
+                previewArea.appendChild(canvas);
+                document.getElementById('previewModal').classList.remove('hidden');
+            });
+        }
+
+        function closePreview() {
+            document.getElementById('previewModal').classList.add('hidden');
+        }
+
+        function downloadStrukPNG() {
+            const strukElement = document.getElementById('strukCard');
+            
+            html2canvas(strukElement, {
+                scale: 3,
+                useCORS: true,
+                backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#ffffff'
+            }).then(canvas => {
+                const link = document.createElement('a');
+                link.download = 'struk-refund-vyota.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
